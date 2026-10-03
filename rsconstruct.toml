@@ -86,5 +86,5 @@ args = [
 
 # ─── html ────────────────────────────────────────────────────────────────────
 
-[processor.htmlhint]
+[processor.tidy]
 src_dirs = ["docs"]
