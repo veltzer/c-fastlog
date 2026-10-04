@@ -16,7 +16,7 @@ reject_dot_src_dirs = true
 # listed here must exist: rsconstruct rejects a missing one at config load.
 # Repos still on config/*.py keep a dep_inputs override in their local
 # overlay until converted.
-[processor.tera]
+[processor.generator.tera]
 dep_auto = [
 	"config/project.lua",
 	"config/personal.lua",
@@ -29,19 +29,19 @@ dep_inputs = [
     "config/version.lua",
 ]
 
-[processor.ruff]
+[processor.checker.ruff]
 src_dirs = ["src", "scripts", "config"]
 
 
-[processor.mypy]
+[processor.checker.mypy]
 src_dirs = ["src", "scripts", "config"]
 
-[processor.luacheck]
+[processor.checker.luacheck]
 src_dirs = ["config"]
 
 # ─── toml / yaml / json ──────────────────────────────────────────────────────
 
-[processor.taplo]
+[processor.checker.taplo]
 src_files = [".rumdl.toml", "pyproject.toml", "rsconstruct.toml"]
 
 # The Makefile compiled src/**/*.c (-fpic) into out/lib/libfastlog.so, then
@@ -49,7 +49,7 @@ src_files = [".rumdl.toml", "pyproject.toml", "rsconstruct.toml"]
 # multi-object shared-library link with a lib-before-tests order, which the
 # single-file C processor cannot express, so scripts/build_fastlog.py runs the
 # exact sequence. The .c/.h sources are the inputs so a change retriggers it.
-[processor.explicit.fastlog]
+[processor.explicit.generic.fastlog]
 command = "scripts/build_fastlog.py"
 input_globs = ["src/**/*.c", "src/**/*.h", "test/*.c"]
 output_files = [
@@ -66,17 +66,17 @@ system = [
 ]
 
 # lint the GitHub Actions workflow files with actionlint
-[processor.actionlint]
+[processor.checker.actionlint]
 src_dirs = [".github/workflows"]
 
 # ─── markdown ────────────────────────────────────────────────────────────────
 
-[processor.rumdl]
+[processor.checker.rumdl]
 src_files = ["README.md"]
 
 # ─── c / c++ ─────────────────────────────────────────────────────────────────
 
-[processor.cppcheck]
+[processor.checker.cppcheck]
 src_dirs = ["src", "test"]
 args = [
 	"--error-exitcode=1",
@@ -86,5 +86,5 @@ args = [
 
 # ─── html ────────────────────────────────────────────────────────────────────
 
-[processor.tidy]
+[processor.checker.tidy]
 src_dirs = ["docs"]
