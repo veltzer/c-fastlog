@@ -2,13 +2,16 @@
 
 """ Build the fastlog shared library and its test programs, reproducing the
 Makefile: compile every src/**/*.c with -fpic, link them into
-out/lib/libfastlog.so, then compile each test/*.c against that library. File
-arguments are ignored -- the source layout below defines the build. """
+out/lib/libfastlog.so, then compile each test/*.c against that library. The
+object files go to a temporary directory, so only the declared outputs land in
+the tree. File arguments are ignored -- the source layout below defines the
+build. """
 
 import glob
 import os
 import subprocess
 import sys
+import tempfile
 
 CC = "gcc"
 SRCDIR = "src"
@@ -26,11 +29,12 @@ def run(cmd):
         sys.exit(ret)
 
 
-def build_library():
-    """ Compile every library source and link them into the shared object. """
+def build_library(objdir):
+    """ Compile every library source into objdir and link them into the shared
+    object. """
     objs = []
     for src in sorted(glob.glob(os.path.join(SRCDIR, "**", "*.c"), recursive=True)):
-        obj = os.path.join(OUT, "obj", os.path.splitext(src)[0] + ".o")
+        obj = os.path.join(objdir, os.path.splitext(src)[0] + ".o")
         os.makedirs(os.path.dirname(obj), exist_ok=True)
         run([CC, "-c"] + CFLAGS + ["-o", obj, src])
         objs.append(obj)
@@ -49,7 +53,8 @@ def build_tests():
 
 def main():
     """ main entry point """
-    build_library()
+    with tempfile.TemporaryDirectory() as objdir:
+        build_library(objdir)
     build_tests()
 
 
