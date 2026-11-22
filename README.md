@@ -5,7 +5,7 @@
 
 description: Fastlog is a C/C++ library for fast/realtime logging
 
-project website: https://veltzer.github.io/c-fastlog
+project website: <https://veltzer.github.io/c-fastlog>
 
 author: Mark Veltzer
 
