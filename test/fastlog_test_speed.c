@@ -53,15 +53,15 @@
  * EXTRA_LIBS=-lpthread
  */
 
-void empty_noinline(const char* fmt,...) __attribute__((format(printf, 1, 2), noinline));
-void empty_noinline(const char* fmt,...) {
+static void empty_noinline(const char* fmt,...) __attribute__((format(printf, 1, 2), noinline));
+static void empty_noinline(const char* fmt,...) {
 }
 
-void empty_inline(const char* fmt,...) __attribute__((format(printf, 1, 2)));
-void empty_inline(const char* fmt,...) {
+static void empty_inline(const char* fmt,...) __attribute__((format(printf, 1, 2)));
+static void empty_inline(const char* fmt,...) {
 }
 
-void* func(void* arg) {
+static void* func(void* arg) {
 	sched_print_info();
 	printf("all time measurements are in micro seconds...\n");
 	// the name of this app
@@ -169,23 +169,6 @@ void* func(void* arg) {
 	sleep(1);
 
 	return NULL;
-}
-
-typedef void (*vvfunc)(const char* format,...);
-void run_test(vvfunc func,const char* name) {
-	// timevals to store before and after time...
-	struct timeval t1, t2;
-	// number of messages to measure
-	const unsigned int number=10000;
-	// here comes the code
-	printf("doing test [%s]\n",name);
-	// NOTE: only execution code follows this
-	gettimeofday(&t1, NULL);
-	for(int i=0;i<number;i++) {
-		func("this is a message %d",i);
-	}
-	gettimeofday(&t2, NULL);
-	printf("time in micro of one call: %lf\n", micro_diff(&t1,&t2)/(double)number);
 }
 
 int main(int argc, char **argv, char **envp) {

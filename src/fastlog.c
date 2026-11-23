@@ -34,53 +34,6 @@ typedef struct _fastlog_config {
 
 } fastlog_config;
 
-typedef struct _fastlog_thread_config {
-	// these options are to be configured by the user
-	bool thread;
-	bool rt;
-	int priority;
-	int sleep_time;
-
-	// the pthread worker
-	pthread_t worker;
-	// stop the background thread
-	volatile bool stop;
-	// the file the background thread writes to
-	FILE* file;
-} fastlog_thread_config;
-
-// cppcheck-suppress constParameterCallback ; pthread start routine signature
-static void* fastlog_worker(void* vconf) {
-	/*
-	fastlog_thread_config* conf=(fastlog_thread_config*)vconf;
-	while(conf->stop==false) {
-		while(conf->head!=conf->tail) {
-			int res=fputs(conf->tail,conf->file);
-			if(res==EOF) {
-				perror("fputs");
-				exit(1);
-			}
-			conf->tail+=conf->buffer_max_msg;
-			if(conf->tail==conf->buffer+conf->buflen) {
-				conf->tail=conf->buffer;
-			}
-		}
-	}
-	while(conf->head!=conf->tail) {
-		int res=fputs(conf->tail,conf->file);
-		if(res==EOF) {
-			perror("fputs");
-			exit(1);
-		}
-		conf->tail+=conf->buffer_max_msg;
-		if(conf->tail==conf->buffer+conf->buflen) {
-			conf->tail=conf->buffer;
-		}
-	}
-	*/
-	return NULL;
-}
-
 static inline int _fastlog_config_init(fastlog_config* fc) {
 	fc->mlock=false;
 	fc->buffer_msg_num=1024;
@@ -103,14 +56,6 @@ int fastlog_config_init(fastlog_config_t* conf) {
 int fastlog_config_destroy(const fastlog_config_t* conf) {
 	fastlog_config* fc=*conf;
 	free(fc);
-	return 0;
-}
-
-int fastlog_thread_config_init(fastlog_thread_config* conf) {
-	conf->thread=false;
-	conf->rt=false;
-	conf->priority=55;
-	conf->sleep_time=5;
 	return 0;
 }
 
@@ -149,48 +94,10 @@ error:
 	return 0;
 }
 
-int fastlog_thread_start(fastlog_thread_config* conf) {
-	pthread_attr_t myattr;
-	int res=pthread_attr_init(&myattr);
-	if(res) {
-		perror("pthread_attr_init");
-		goto error;
-	}
-	pthread_attr_setinheritsched(&myattr, PTHREAD_EXPLICIT_SCHED);
-	pthread_attr_setschedpolicy(&myattr, SCHED_FIFO);
-	struct sched_param myparam;
-	myparam.sched_priority=conf->priority;
-	pthread_attr_setschedparam(&myattr, &myparam);
-	res=pthread_create(&conf->worker,&myattr,fastlog_worker,conf);
-	if(res) {
-		perror("pthread_create");
-		goto error;
-	}
-	conf->stop=false;
-	return 0;
-
-error:
-	return res;
-}
-
 int fastlog_close(fastlog_config* conf) {
 	// no return value for error code from this one...
 	free(conf->buffer);
 	return 0;
-}
-
-void fastlog_thread_shutdown(fastlog_thread_config* conf) {
-	conf->stop=true;
-	int ret=pthread_join(conf->worker,NULL);
-	if(ret) {
-		perror("pthread_join");
-		exit(1);
-	}
-	ret=fclose(conf->file);
-	if(ret) {
-		perror("fclose");
-		exit(1);
-	}
 }
 
 void fastlog_log(const char* fmt,...) {

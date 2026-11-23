@@ -71,11 +71,13 @@ src_files = ["README.md"]
 
 # ─── c / c++ ─────────────────────────────────────────────────────────────────
 
+# one library (src) plus the test programs that call it: one run over everything so the API has callers
 [processor.checker.cppcheck]
+batch = true
 src_dirs = ["src", "test"]
 args = [
 	"--error-exitcode=1",
-	"--enable=warning,style,performance,portability",
+	"--enable=warning,style,performance,portability,information,unusedFunction",
 	"--check-level=exhaustive",
 	"--inline-suppr",
 ]
