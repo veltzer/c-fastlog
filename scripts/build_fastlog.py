@@ -18,7 +18,7 @@ SRCDIR = "src"
 OUT = "out"
 LIBNAME = "fastlog"
 BASE_FLAGS = ["-O2", "-fpic", "-Wall", "-Werror", "-std=gnu99", "-Wno-dangling-pointer"]
-CFLAGS = BASE_FLAGS + ["-I" + SRCDIR, "-Itest"]
+CFLAGS = [*BASE_FLAGS, "-I" + SRCDIR, "-Itest"]
 LIB = os.path.join(OUT, "lib", "lib" + LIBNAME + ".so")
 
 
@@ -36,10 +36,10 @@ def build_library(objdir):
     for src in sorted(glob.glob(os.path.join(SRCDIR, "**", "*.c"), recursive=True)):
         obj = os.path.join(objdir, os.path.splitext(src)[0] + ".o")
         os.makedirs(os.path.dirname(obj), exist_ok=True)
-        run([CC, "-c"] + CFLAGS + ["-o", obj, src])
+        run([CC, "-c", *CFLAGS, "-o", obj, src])
         objs.append(obj)
     os.makedirs(os.path.dirname(LIB), exist_ok=True)
-    run([CC, "-shared", "-fpic", "-o", LIB] + objs)
+    run([CC, "-shared", "-fpic", "-o", LIB, *objs])
 
 
 def build_tests():
@@ -48,7 +48,7 @@ def build_tests():
     os.makedirs(os.path.join(OUT, "bin"), exist_ok=True)
     for src in sorted(glob.glob(os.path.join("test", "*.c"))):
         exe = os.path.join(OUT, "bin", os.path.splitext(os.path.basename(src))[0])
-        run([CC] + CFLAGS + ["-o", exe, src] + binld)
+        run([CC, *CFLAGS, "-o", exe, src, *binld])
 
 
 def main():
