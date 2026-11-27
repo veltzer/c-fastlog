@@ -22,14 +22,14 @@ CFLAGS = [*BASE_FLAGS, "-I" + SRCDIR, "-Itest"]
 LIB = os.path.join(OUT, "lib", "lib" + LIBNAME + ".so")
 
 
-def run(cmd):
+def run(cmd: list[str]) -> None:
     """ Run a command, exiting the process on the first failure. """
     ret = subprocess.call(cmd)
     if ret != 0:
         sys.exit(ret)
 
 
-def build_library(objdir):
+def build_library(objdir: str) -> None:
     """ Compile every library source into objdir and link them into the shared
     object. """
     objs = []
@@ -42,7 +42,7 @@ def build_library(objdir):
     run([CC, "-shared", "-fpic", "-o", LIB, *objs])
 
 
-def build_tests():
+def build_tests() -> None:
     """ Compile each test program against the shared library. """
     binld = ["-L" + os.path.join(OUT, "lib"), "-l" + LIBNAME, "-lpthread"]
     os.makedirs(os.path.join(OUT, "bin"), exist_ok=True)
@@ -51,7 +51,7 @@ def build_tests():
         run([CC, *CFLAGS, "-o", exe, src, *binld])
 
 
-def main():
+def main() -> None:
     """ main entry point """
     with tempfile.TemporaryDirectory() as objdir:
         build_library(objdir)
