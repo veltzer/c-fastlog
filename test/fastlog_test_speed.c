@@ -55,13 +55,18 @@
 
 static void empty_noinline(const char* fmt,...) __attribute__((format(printf, 1, 2), noinline));
 static void empty_noinline(const char* fmt,...) {
+	// measures the cost of the call alone: the arguments are not read
+	(void)fmt;
 }
 
 static void empty_inline(const char* fmt,...) __attribute__((format(printf, 1, 2)));
 static void empty_inline(const char* fmt,...) {
+	(void)fmt;
 }
 
 static void* func(void* arg) {
+	// the signature is the thread library's: this thread takes no argument
+	(void)arg;
 	sched_print_info();
 	printf("all time measurements are in micro seconds...\n");
 	// the name of this app
@@ -171,7 +176,7 @@ static void* func(void* arg) {
 	return NULL;
 }
 
-int main(int argc, char **argv, char **envp) {
+int main(void) {
 	//sched_print_table();
 	sched_run_priority(func, NULL, SCHED_FIFO_HIGH_PRIORITY, SCHED_FIFO);
 	return 0;

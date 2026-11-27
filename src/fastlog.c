@@ -101,6 +101,8 @@ int fastlog_close(fastlog_config* conf) {
 }
 
 void fastlog_log(const char* fmt,...) {
+	// the format is read only when DO_WRITE is defined
+	(void)fmt;
 	// atomically get my own position from head
 	// (increase the head and get the old value)
 	// apparently there is no need for a loop around this

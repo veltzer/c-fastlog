@@ -10,7 +10,7 @@
  * The idea is to be able to retrieve the log from the core file.
  */
 
-int main(int argc,char** argv,char ** envp) {
+int main(void) {
 	// lets check that we can dump core
 	struct rlimit limit;
 	int ret=getrlimit(RLIMIT_CORE,&limit);

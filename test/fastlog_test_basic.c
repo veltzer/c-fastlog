@@ -1,6 +1,6 @@
 #include <fastlog.h>
 
-int main(int argc,char** argv,char ** envp) {
+int main(void) {
 	fastlog_config_t conf;
 	if(fastlog_config_init(&conf)!=0) {
 		return 1;
