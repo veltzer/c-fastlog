@@ -17,7 +17,7 @@ CC = "gcc"
 SRCDIR = "src"
 OUT = "out"
 LIBNAME = "fastlog"
-BASE_FLAGS = ["-O2", "-fpic", "-Wall", "-Werror", "-std=gnu99", "-Wno-dangling-pointer"]
+BASE_FLAGS = ["-O2", "-fpic", "-Wall", "-Werror", "-pedantic", "-std=gnu99", "-Wno-dangling-pointer"]
 CFLAGS = [*BASE_FLAGS, "-I" + SRCDIR, "-Itest"]
 LIB = os.path.join(OUT, "lib", "lib" + LIBNAME + ".so")
 
